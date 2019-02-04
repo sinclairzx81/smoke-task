@@ -23,7 +23,7 @@ Smoke-Task is a lightweight task runner for node. It allows one to write vanilla
 
 This tools main focus is to provide a scripting environment for running shell commands and offers a single built in function `shell(cmd)`. All shell commands are run asynchronously and return Promises to be `awaited`, multiple shell commands can be executed in parallel via `Promise.all()`. Useful for watch tasks.
 
-This tool is offered for anyone who finds it useful.
+This tool is offered for anyone who finds it useful. Supports node 10 and up.
 
 ## Tasks
 Smoke-Task requires that a `tasks.js` file exist in the current working directory (typically a project root). For tasks to be available to the terminal, they must `export` themselves. As follows.
