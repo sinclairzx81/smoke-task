@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "module": "amd",
+    "target": "esnext",
+    "outFile": "../bin/index.js",
+    "moduleResolution": "node",
+    "removeComments": true,
+    "lib": ["dom", "esnext"],
+    "strict": true,
+    "preserveWatchOutput": true
+  },
+  "files": ["index.ts"]
+}
