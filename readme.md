@@ -1,4 +1,4 @@
-# smoke-task
+# Smoke-Task
 
 An ultra lightweight JavaScript task runner for node.
 ```
