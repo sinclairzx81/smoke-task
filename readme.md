@@ -19,7 +19,7 @@ $ smoke-task add 10 20
 
 Smoke-Task is a lightweight task runner for node. It allows one to write vanilla JavaScript functions which can be run via the terminal or via npm scripts.
 
-This tools main focus is to provide a scripting environment for running shell commands and offers a single built in function `shell(cmd)`. All shell commands are run asynchronously and return Promises to be `awaited`, multiple shell commands can be executed in parallel via `Promise.all()`. Useful for watch tasks.
+This tools focus is to provide a simple scripting environment for automating various project workflows in JavaScript. It exposes a `shell` function to the script which can be executed sequentially via `async/await` or executed in parallel via `Promise.all()`
 
 This tool is offered for anyone who finds it useful. Supports node 10 and up.
 
@@ -27,9 +27,12 @@ This tool is offered for anyone who finds it useful. Supports node 10 and up.
 Smoke-Task requires that a `tasks.js` file exist in the current working directory (typically a project root). For tasks to be available to the terminal, they must `export` themselves. As follows.
 
 ```typescript
+
 export function syncTask() { /* code here */ }
 
 export async function asyncTask() { /* code here */ }
+
+function notATask() { /* :( */ }
 ```
 ```bash
 $ smoke-task syncTask
@@ -49,7 +52,8 @@ $ smoke-task myTask hello 42
 Note: This tool will treat each space in an argument list as a distinct function argument. Only single `word` strings are supported.
 
 ## Series
-The following is a simple build task that compiles a TypeScript file and copies some files around.
+The following is a simple build task that compiles a TypeScript file and copies some files around. This example uses the [shx](https://www.npmjs.com/package/shx) tool to allow for cross platform shell commands.
+
 ```typescript
 export async function build() {
   await shell('tsc ./src/index.ts --outFile ./bin/index.js')
@@ -63,7 +67,7 @@ $ smoke-task build
 ```
 ## Parallel
 
-It's common to want to run multiple shell commands simultaneously. The following runs the TypeScript compiler in watch mode and also starts a `serve` process running on port 5000. Both commands are executed in parallel and never finish. Useful for watch development workflows.
+It's common to want to run multiple shell commands simultaneously. The following runs the [TypeScript](https://www.npmjs.com/package/typescript) compiler in watch mode and also starts a [serve](https://www.npmjs.com/package/serve) process running on port 5000. Both commands are executed in parallel and never finish. Useful for watch development workflows.
 
 ```typescript
 export async function watch() {
