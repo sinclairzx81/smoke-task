@@ -1,12 +1,11 @@
 {
   "name": "smoke-task",
-  "version": "1.0.0",
-  "description": "An ultra lightweight JavaScript task runner for node.",
+  "version": "1.0.1",
+  "description": "A JavaScript task runner for node.",
   "scripts": {
     "clean": "node tasks clean",
-    "spec": "node tasks spec",
-    "pack": "node tasks pack",
-    "install-cli": "node tasks install_cli"
+    "pack": "npm install && node tasks pack",
+    "install-cli": "npm install && node tasks install_cli"
   },
   "bin": {
     "smoke-task": "./smoke-task"
@@ -20,9 +19,6 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^8.0.7",
-    "chai": "^4.1.2",
-    "fsrun": "^0.9.4",
-    "mocha": "^5.2.0",
     "shx": "^0.2.2",
     "typescript": "^3.2.4",
     "typescript-bundle": "^1.0.7"

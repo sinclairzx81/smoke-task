@@ -26,4 +26,4 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export { readTasksFile, TaskFileResult, TaskFile, TaskFileError } from './file'
+export { readTasksFile, TaskFileResult, TaskFile, TaskFileError } from './taskfile'

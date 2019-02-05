@@ -21,52 +21,42 @@ const cli = async (args, tasks) => {
 }
 
 //------------------------------------------------------
-//  constants:
-//------------------------------------------------------
-
-const BUILD_SRC  = 'tsc-bundle ./src/tsconfig.json'
-
-//------------------------------------------------------
 //  tasks:
 //------------------------------------------------------
 
 async function clean() {
-  await shell('shx rm -rf ./bin')
-  await shell('shx rm -rf ./pack')
+  await shell('shx rm -rf ./output/pack')
+  await shell('shx rm -rf ./output')
   await shell('shx rm -rf ./spec/index.js')
   await shell('shx rm -rf ./node_modules')
 }
 
-async function spec() {
-  await shell('npm install')
-  await Promise.all([
-    shell(`${BUILD_SRC} --outFile ./spec/index.js --watch`),
-    shell(`cd spec && fsrun ./index.js [node ./index.js start "hello world" 1.123 true]`)
-  ])
-}
-
 async function pack() {
-  await shell('npm install')
-  await shell(`${BUILD_SRC}`)
-  await shell('shx mkdir -p ./pack')
-  await shell('cp -p ./bin/index.js ./pack')
-  await shell('cp -p ./package.json ./pack')
-  await shell('cp -p ./readme.md ./pack')
-  await shell('cp -p ./license ./pack')
-  await shell('cp -p ./src/smoke-task ./pack')
+  await shell('shx rm -rf ./output/pack')
+  await shell('tsc-bundle ./src/tsconfig.json --outFile ./output/pack/index.js')
+  await shell('shx cp ./src/smoke-task ./output/pack')
+  await shell('shx cp ./package.json   ./output/pack')
+  await shell('shx cp ./readme.md      ./output/pack')
+  await shell('shx cp ./license        ./output/pack')
+  await shell('cd ./output/pack && npm pack')
+  await shell('shx rm ./output/pack/index.js')
+  await shell('shx rm ./output/pack/smoke-task')
+  await shell('shx rm ./output/pack/package.json')
+  await shell('shx rm ./output/pack/readme.md')
+  await shell('shx rm ./output/pack/license')
 }
 
 async function install_cli() {
   await pack()
-  await shell(`cd ./pack && npm install -g`)
+  await shell('cd ./output/pack && npm install ./* -g')
 }
+
 //------------------------------------------------------
 //  cli:
 //------------------------------------------------------
 
 cli(process.argv, {
   clean,
-  spec,
   pack,
   install_cli,
 }).catch(console.log)

@@ -103,19 +103,25 @@ export interface TaskFile {
   tasks:    Task[]
 }
 export interface TaskFileError {
-  type: 'task-file-error'
-  message: string
+  type:    'task-file-error'
+  message:  string
 }
+
 export function readTasksFile(taskFile: string): TaskFileResult {
   const filePath = resolve(taskFile)
   if(!existsSync(filePath)) {
-    const type = 'task-file-error'
+    const type    = 'task-file-error'
     const message = `No 'tasks.js' file found in this directory.`
     return { type, message } 
   }
-  const type     = 'task-file'
-  const code     = readFileSync(filePath, 'utf8')
-  const methods  = readTasks(code)
-  const content  = transformTasks(code, methods)
-  return { type, content, tasks: methods, filePath }
+  const code = readFileSync(filePath, 'utf8')
+  const tasks = readTasks(code)
+  if(tasks.length === 0) {
+    const type    = 'task-file-error'
+    const message = `No tasks found in 'tasks.js' file.`
+    return { type, message }
+  }
+  const type = 'task-file'
+  const content = transformTasks(code, tasks)
+  return { type, content, tasks, filePath }
 }

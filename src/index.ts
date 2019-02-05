@@ -26,62 +26,109 @@ SOFTWARE.
 
 import { readCommand, RunCommand } from './command'
 import { readTasksFile, TaskFile } from './taskfile'
-import { runTask }                 from './context'
+import { runTask }                 from './execute'
 import { join }                    from 'path'
 
-const TASKFILE = join(process.cwd(), './tasks.js')
+const TASK_FILE = join(process.cwd(), './tasks.js')
 
-/** Exits the task runner with status code 1 and a message. */
-function fatal(message: string = '') {
-  console.error(message)
-  process.exit(1)
-}
+// ---------------------------------------------------------------------
+//
+// Report
+//
+// Prints general information about running tasks and enumerates
+// existing tasks if present. This function serves as a print and
+// exit point for the process. It exits the process appropriately
+// on error. This function could use a general clean up.
+//
+// ---------------------------------------------------------------------
 
-/** Prints an informational message + available tasks. */
-function info(message: string = '') {
-  console.log(message); console.log()
-  const result = readTasksFile(TASKFILE)
-  if (result.type === 'task-file') {
-    console.log('Tasks:')
-    result.tasks.forEach(task => {
-      const parameters = task.args.join(', ').trim()
-      console.log(' - ' + task.name + ' (' + parameters + ')')
+async function report(message: string | null = null, error: boolean = false) {
+  const buffer = []
+  const green  = '\x1b[32m'
+  const yellow = '\x1b[33m'
+  const esc    = '\x1b[0m'
+  // report general help information.
+  buffer.push(...[
+    'Version 1.0.1', ``,
+    `$ ${green}smoke-task${esc} <task> [...params]`, ``,
+  ])
+
+  // report usage or existing tasks if available.
+  const file = readTasksFile(TASK_FILE)
+  if(!(file.type === 'task-file' && file.tasks.length > 0)) {
+    buffer.push(...[
+      `Examples: ${green}smoke-task${esc} ${yellow}build${esc}`,
+      `          ${green}smoke-task${esc} ${yellow}add${esc} 10 20`, ``,
+    ])
+  } else {
+    const tasks = file.tasks.map((task, index) => {
+      const padding = (index === 0)
+        ? `Tasks:${Array.from({length: 2}).join(' ')}`
+        : Array.from({length: 8}).join(' ')
+      const line = `${padding}${green}smoke-task${esc} ${yellow}${task.name}${esc}`
+      const args = task.args.join(' ')
+      return [line, args].join(' ')
     })
+    buffer.push(...tasks)
+    buffer.push('')
   }
+  // report any info | error messages.
+  if(message) {
+    buffer.push(message)
+    buffer.push('')
+  }
+  // emit to console and exit.
+  console.log(buffer.join('\n'))
+  return (!error)
+    ? process.exit(0)
+    : process.exit(1)
 }
 
-/** Executes the given task. */
+// ---------------------------------------------------------------------
+//
+// Execute
+//
+// Attempts to execute the given command
+//
+// ---------------------------------------------------------------------
+
 async function execute(command: RunCommand, taskfile: TaskFile) {
   const task = taskfile.tasks.find(task => task.name === command.task)
-  if (task) {
-    return runTask(taskfile, command.task, command.parameters)
+  if (!task) {
+    report(`Task '${command.task}' not found. Did you forget to export a function?`, true)
   }
-  info(`Task '${command.task}' not found. Did you forget to export the function?`)
-  fatal()
+  return runTask(taskfile, command.task, command.parameters)
 }
 
-/** Runs a command issued from the command line. */
+// ---------------------------------------------------------------------
+//
+// Run
+//
+// Attempts to run the given command.
+//
+// ---------------------------------------------------------------------
+
 async function run(command: RunCommand) {
-  const result = readTasksFile(TASKFILE)
+  const result = readTasksFile(TASK_FILE)
   switch (result.type) {
-    case 'task-file-error': return fatal(result.message);
+    case 'task-file-error': return report(result.message, true);
     case 'task-file': return execute(command, result);
   }
 }
 
-/** Starts up the process. */
-async function start() {
-  try {
-    const command = readCommand(process.argv)
-    switch (command.type) {
-      case 'info': return info()
-      case 'run': return run(command)
-    }
-  } catch (error) {
-    fatal(error.message)
+// ---------------------------------------------------------------------
+//
+// Main
+//
+// ---------------------------------------------------------------------
+async function main() {
+  const command = readCommand(process.argv)
+  switch (command.type) {
+    case 'info': return report(null, false)
+    case 'run':  return run(command)
   }
 }
-start()
+main()
 
 
 

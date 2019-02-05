@@ -26,22 +26,6 @@ SOFTWARE.
 
 // -------------------------------------------------------------------
 //
-// Parse Parameters
-//
-// Parses out the argv parameters. In future, perhaps consider better
-// support for 'string' parsing, allowing users to pass strings within
-// quotes.
-//
-// -------------------------------------------------------------------
-function* parseParameters(args: string[]) {
-  while(args.length > 0) {
-    const current = args.shift()!
-    yield current
-  }
-}
-
-// -------------------------------------------------------------------
-//
 // Command
 //
 // Reads command line arguments from the processes argv array.
@@ -56,7 +40,7 @@ export function readCommand(argv: string[]): Command {
     const type = 'info'
     return { type }
   }
-  const parameters = [...parseParameters(argv.slice(2))]
+  const parameters = [...argv.slice(2)]
   const method     = parameters.shift()!
   const type       = 'run'
   return { type, task: method, parameters }

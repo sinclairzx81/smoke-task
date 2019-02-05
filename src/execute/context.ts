@@ -24,7 +24,7 @@ SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { TaskFile }              from '../taskfile/file'
+import { TaskFile }              from '../taskfile'
 import { shell }                 from './shell'
 import { Script, createContext } from 'vm'
 

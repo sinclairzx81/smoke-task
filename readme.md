@@ -1,12 +1,10 @@
 # Smoke-Task
 
-An ultra lightweight JavaScript task runner for node.
+A JavaScript task runner for node.
 ```
 $ npm install smoke-task -g
 ```
-
 ```javascript
-// ./tasks.js
 export async function add(a, b) {
   await shell(`echo ${a + b}`)
 }
