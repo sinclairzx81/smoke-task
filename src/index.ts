@@ -49,7 +49,7 @@ async function report(message: string | null = null, error: boolean = false) {
   const esc    = '\x1b[0m'
   // report general help information.
   buffer.push(...[
-    'Version 1.0.1', ``,
+    'Version 1.0.2', ``,
     `$ ${green}smoke-task${esc} <task> [...params]`, ``,
   ])
 
@@ -121,6 +121,7 @@ async function run(command: RunCommand) {
 // Main
 //
 // ---------------------------------------------------------------------
+
 async function main() {
   const command = readCommand(process.argv)
   switch (command.type) {
@@ -128,7 +129,11 @@ async function main() {
     case 'run':  return run(command)
   }
 }
+
 main()
+.then(() => process.exit(0))
+.catch(console.log)
+.then(() => process.exit(1))
 
 
 
