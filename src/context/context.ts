@@ -25,7 +25,7 @@ SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { TaskFile }              from '../taskfile'
-import { shell }                 from './shell'
+import { shell_options, shell }  from './shell'
 import { Script, createContext } from 'vm'
 
 // -------------------------------------------------------------------
@@ -67,6 +67,7 @@ export async function runTask(taskFile: TaskFile, task: string, parameters: stri
     require,
     console,
     args,
+    shell_options,
     shell,
     ...global
   })

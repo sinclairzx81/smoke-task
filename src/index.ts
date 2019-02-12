@@ -26,7 +26,7 @@ SOFTWARE.
 
 import { readCommand, RunCommand } from './command'
 import { readTasksFile, TaskFile } from './taskfile'
-import { runTask }                 from './execute'
+import { runTask }                 from './context'
 import { join }                    from 'path'
 
 const TASK_FILE = join(process.cwd(), './tasks.js')
@@ -49,7 +49,7 @@ async function report(message: string | null = null, error: boolean = false) {
   const esc    = '\x1b[0m'
   // report general help information.
   buffer.push(...[
-    'Version 1.0.2', ``,
+    'Version 1.0.3', ``,
     `$ ${green}smoke-task${esc} <task> [...params]`, ``,
   ])
 
