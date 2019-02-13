@@ -118,7 +118,7 @@ export function readTasksFile(taskFile: string): TaskFileResult {
   const tasks = readTasks(code)
   if(tasks.length === 0) {
     const type    = 'task-file-error'
-    const message = `No tasks found in 'tasks.js' file.`
+    const message = `No export functions found in 'tasks.js' file.`
     return { type, message }
   }
   const type = 'task-file'

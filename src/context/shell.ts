@@ -93,6 +93,7 @@ export function shell (command: string, options: CommandOptions = {}): Promise<n
     if(options.stderr) {
       subprocess.stderr.pipe(process.stderr)
     }
+    subprocess.on('error', () => { /* ignore */ })
     subprocess.on('close', (exitcode: number) => {
       if(exitcode !== options.expect) {
         return reject(new ShellExitCodeError(options.expect!, exitcode))
