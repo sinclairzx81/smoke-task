@@ -49,7 +49,7 @@ async function report(message: string | null = null, error: boolean = false) {
   const esc    = '\x1b[0m'
   // report general help information.
   buffer.push(...[
-    'Version 1.0.4', ``,
+    'Version 1.0.5', ``,
     `$ ${green}smoke-task${esc} <task> [...params]`, ``,
   ])
 

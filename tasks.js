@@ -20,37 +20,35 @@ const cli = async (args, tasks) => {
   }; await func()
 }
 
+const package = require(`${process.cwd()}/package.json`)
+
 //------------------------------------------------------
 //  tasks:
 //------------------------------------------------------
 
 async function clean() {
-  await shell('shx rm -rf ./output/pack')
-  await shell('shx rm -rf ./output')
-  await shell('shx rm -rf ./spec/index.js')
+  await shell('shx rm -rf ./public')
   await shell('shx rm -rf ./node_modules')
 }
 
 async function pack() {
-  await shell('shx rm -rf ./output/pack')
-  await shell('tsc-bundle ./src/tsconfig.json --outFile ./output/pack/index.js')
-  await shell('shx cp ./src/smoke-task ./output/pack')
-  await shell('shx cp ./package.json   ./output/pack')
-  await shell('shx cp ./readme.md      ./output/pack')
-  await shell('shx cp ./license        ./output/pack')
-  await shell('cd ./output/pack && npm pack')
-  await shell('shx rm ./output/pack/index.js')
-  await shell('shx rm ./output/pack/smoke-task')
-  await shell('shx rm ./output/pack/package.json')
-  await shell('shx rm ./output/pack/readme.md')
-  await shell('shx rm ./output/pack/license')
+  await shell('shx rm -rf ./public/pack')
+  await shell('tsc-bundle ./src/tsconfig.json --outFile ./public/pack/index.js')
+  await shell('shx cp ./src/start.js   ./public/pack')
+  await shell('shx cp ./package.json   ./public/pack')
+  await shell('shx cp ./readme.md      ./public/pack')
+  await shell('shx cp ./license        ./public/pack')
+  await shell('cd ./public/pack && npm pack')
 }
 
 async function install_cli() {
   await pack()
-  await shell('cd ./output/pack && npm install ./* -g')
+  await shell(`npm install public/pack/${package.name}-${package.version}.tgz -g`)
 }
 
+async function watch() {
+  await shell(`smoke-run ./src/{**,.}/** -- npm run install-cli`)
+}
 //------------------------------------------------------
 //  cli:
 //------------------------------------------------------
@@ -59,4 +57,5 @@ cli(process.argv, {
   clean,
   pack,
   install_cli,
+  watch
 }).catch(console.log)

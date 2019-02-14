@@ -1,14 +1,15 @@
 {
   "name": "smoke-task",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A JavaScript task runner for node.",
   "scripts": {
     "clean": "node tasks clean",
-    "pack": "npm install && node tasks pack",
-    "install-cli": "npm install && node tasks install_cli"
+    "pack": "node tasks pack",
+    "install-cli": "node tasks install_cli",
+    "watch": "node tasks watch"
   },
   "bin": {
-    "smoke-task": "./smoke-task"
+    "smoke-task": "./start.js"
   },
   "preferGlobal": true,
   "repository": {

@@ -24,9 +24,12 @@ SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { Script, createContext } from 'vm'
 import { TaskFile }              from '../taskfile'
 import { shell_options, shell }  from './shell'
-import { Script, createContext } from 'vm'
+import { exists }                from './exists'
+import { make }                  from './make'
+import { drop }                  from './drop'
 
 // -------------------------------------------------------------------
 //
@@ -69,6 +72,9 @@ export async function runTask(taskFile: TaskFile, task: string, parameters: stri
     args,
     shell_options,
     shell,
+    exists,
+    make,
+    drop,
     ...global
   })
   const theader = `(async function(args) {`
