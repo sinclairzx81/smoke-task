@@ -1,6 +1,6 @@
 {
   "name": "smoke-task",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A JavaScript task runner for node.",
   "scripts": {
     "clean": "node tasks clean",

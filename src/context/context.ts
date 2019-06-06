@@ -67,6 +67,7 @@ function mapParameterType (parameters: string[]): Array<string|number|boolean> {
 export async function runTask(taskFile: TaskFile, task: string, parameters: string[] = []) {
   const args = mapParameterType(parameters)
   const context = createContext({
+    process,
     require,
     console,
     args,
