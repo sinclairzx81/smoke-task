@@ -1,6 +1,6 @@
 {
   "name": "smoke-task",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "A JavaScript task runner for node.",
   "scripts": {
     "clean": "node tasks clean",
@@ -22,7 +22,7 @@
     "@types/node": "^8.0.7",
     "shx": "^0.2.2",
     "typescript": "^3.2.4",
-    "typescript-bundle": "^1.0.7"
+    "typescript-bundle": "^1.0.16"
   },
   "dependencies": {}
 }
