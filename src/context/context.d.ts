@@ -25,7 +25,6 @@ SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 /// <reference types="node" />
-import { Readable } from 'stream';
 
 declare class File {
     /** Appends to this file from a remote path | url. If file not exist, create. */

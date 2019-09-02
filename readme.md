@@ -1,6 +1,6 @@
 # Smoke-Task
 
-A project automation task runner for node.
+A JavaScript task runner for node.
 
 [![NPM package](https://badge.fury.io/js/smoke-task.svg)](https://www.npmjs.com/package/smoke-task)
 
