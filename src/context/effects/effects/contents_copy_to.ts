@@ -2,7 +2,7 @@
 
 MIT License
 
-Copyright (c) smoke-task 2019 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+Copyright (c) fs-effects 2019 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,29 +24,29 @@ SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { dirname }                   from 'path'
-import { existsSync, writeFileSync } from 'fs'
-import { mkdirSync }                 from 'fs'
+import { common_stat }    from './common_stat'
+import { folder_exists }  from './folder_exists'
+import { folder_copy_to } from './folder_copy_to'
+import { file_copy_to }   from './file_copy_to'
+import { readdir }        from 'fs'
+import { promisify }      from 'util'
+import { join }           from 'path'
 
-/** Makes the given directory path. If not exists, create recursively. */
-export function makeDirectory (directoryPath: string): void {
- const facade: Function = mkdirSync // pending node 10 LTS
- facade(directoryPath, { recursive: true })
-}
-/** Makes the given directory path. If not exists, create recursively. */
-export function makeFile (filePath: string): void {
-  const directoryPath = dirname(filePath)
-  makeDirectory(directoryPath)
-  writeFileSync(filePath, Buffer.alloc(0))
-}
+const readdirAsync = promisify(readdir)
 
-/** Makes the given path as either an empty file, or directory. Default is 'directory' */
-export function make(pathLike: string, type: 'directory' | 'file' = 'directory') {
-  if(existsSync(pathLike)) {
-    return
-  }
-  return (type === 'directory')
-    ? makeDirectory(pathLike)
-    : makeFile(pathLike)
+/** Copies the contents this folder into the given remote folder. */
+export async function contents_copy_to(folder: string, remote: string): Promise<void> {
+    if(!await folder_exists(folder)) {
+        throw new Error(`Cannot copy contents from '${folder}' as the folder does not exist.`)
+    }
+    for(const content of await readdirAsync(folder)) {
+        const path = join(folder, content)
+        const stat = await common_stat(path)
+        if(stat.isDirectory()) {
+            await folder_copy_to(path, remote)
+        }
+        if(stat.isFile()) {
+            await file_copy_to(path, remote)
+        }
+    }
 }
-

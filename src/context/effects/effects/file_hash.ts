@@ -2,7 +2,7 @@
 
 MIT License
 
-Copyright (c) smoke-task 2019 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+Copyright (c) fs-effects 2019 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,32 +24,16 @@ SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { existsSync, lstatSync, unlinkSync, rmdirSync, readdirSync } from 'fs'
-import { join } from 'path'
+import { createHash }       from 'crypto'
+import { createReadStream } from 'fs'
 
-function dropFile(filePath: string) {
-  unlinkSync(filePath)
-}
-/** Recursively deletes the given path. */
-function dropDirectory(directoryPath: string) {
-  for (const file of readdirSync(directoryPath)) {
-    const current = join(directoryPath, file)
-    if (lstatSync(current).isDirectory()) {
-      dropDirectory(current)
-    } else {
-      dropFile(current)
-    }
-  }
-  rmdirSync(directoryPath)
-}
-
-/** Recursively deletes the given path. */
-export function drop(pathLike: string): void {
-  if(!existsSync(pathLike)) {
-    return
-  }
-  const stat = lstatSync(pathLike)
-  return (stat.isDirectory())
-    ? dropDirectory(pathLike)
-    : dropFile(pathLike)
+/** Returns a hash of the contents of this file using the given algorithm. */
+export function file_hash(file: string, algorithm: string = 'sha1'): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+        const hash = createHash(algorithm)
+        const readable = createReadStream(file)
+        readable.on('data',  buffer => hash.update(buffer))
+        readable.on('error', error  => reject(error))
+        readable.on('end',   ()     => resolve(hash.digest('hex')))
+    })
 }

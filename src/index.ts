@@ -47,9 +47,10 @@ async function report(message: string | null = null, error: boolean = false) {
   const green  = '\x1b[32m'
   const yellow = '\x1b[33m'
   const esc    = '\x1b[0m'
+  
   // report general help information.
   buffer.push(...[
-    'Version 1.0.6', ``,
+    'Version 1.1.0', ``,
     `$ ${green}smoke-task${esc} <task> [...params]`, ``,
   ])
 

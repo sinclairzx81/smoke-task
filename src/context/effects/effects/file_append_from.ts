@@ -2,7 +2,7 @@
 
 MIT License
 
-Copyright (c) smoke-task 2019 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+Copyright (c) fs-effects 2019 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,10 +24,11 @@ SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { existsSync } from 'fs'
+import { common_readable_from } from './common_readable_from'
+import { file_append }          from './file_append'
 
-/** Returns true if the given path exists. */
-export function exists(pathLike: string): boolean {
-  return existsSync(pathLike)
+/** Appends to this file with remote content. If the file does not exist, it is created. */
+export async function file_append_from(file: string, path_or_url: string): Promise<void> {
+    const readable = await common_readable_from(path_or_url)
+    await file_append(file, readable)
 }
-

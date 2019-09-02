@@ -1,61 +1,49 @@
-//------------------------------------------------------
-// task helper scripts:
-//------------------------------------------------------
-
-const shell = (command) => new Promise((resolve, reject) => {
-  const { spawn } = require('child_process')
-  command = command.replace(/'/g, '\'').replace(/"/g, '\"')
-  const windows = /^win/.test(process.platform)
-  console.log(`\x1b[32m${command}\x1b[0m` )
-  const ls      = spawn(windows ? 'cmd' : 'sh', [windows ? '/c' : '-c', command] )
-  ls.stdout.pipe(process.stdout)
-  ls.stderr.pipe(process.stderr)
-  ls.on('close', (code) => resolve(code))
-})
-const cli = async (args, tasks) => {
-  const task = (args.length === 3) ? args[2] : 'none'
-  const func = (tasks[task]) ? tasks[task] : () => {
-    console.log('tasks:')
-    Object.keys(tasks).forEach(task => console.log(` - ${task}`))
-  }; await func()
-}
-
+const { folder, shell } = require('./tools')
 const package = require(`${process.cwd()}/package.json`)
 
-//------------------------------------------------------
-//  tasks:
-//------------------------------------------------------
-
 async function clean() {
-  await shell('shx rm -rf ./public')
-  await shell('shx rm -rf ./node_modules')
+  await folder('node_modules').delete().exec().catch(() => { /** Cannot delete @types on windows */ })
+  await folder('public').delete().exec()
+}
+
+async function build() {
+  await shell('tsc-bundle ./src/tsconfig.json --outFile ./public/pack/index.js').exec()
 }
 
 async function pack() {
-  await shell('shx rm -rf ./public/pack')
+  await folder('public/pack')
+    .delete()
+    .create()
+    .exec()
+
   await shell('tsc-bundle ./src/tsconfig.json --outFile ./public/pack/index.js')
-  await shell('shx cp ./src/start.js   ./public/pack')
-  await shell('shx cp ./package.json   ./public/pack')
-  await shell('shx cp ./readme.md      ./public/pack')
-  await shell('shx cp ./license        ./public/pack')
-  await shell('cd ./public/pack && npm pack')
+    .exec()
+
+  await folder('public/pack')
+    .add('src/context/context.d.ts')
+    .add('src/start.js')
+    .add('package.json')
+    .add('readme.md')
+    .add('license')
+    .exec()
+  
+  await shell('cd ./public/pack && npm pack').exec()
 }
 
 async function install_cli() {
   await pack()
-  await shell(`npm install public/pack/${package.name}-${package.version}.tgz -g`)
+  await shell(`npm install public/pack/${package.name}-${package.version}.tgz -g`).exec()
 }
 
-async function watch() {
-  await shell(`smoke-run ./src/{**,.}/** -- npm run install-cli`)
+/** Command Line interface. */
+async function cli (args, tasks) {
+  const [_, __, task] = args
+  await tasks[task]()
 }
-//------------------------------------------------------
-//  cli:
-//------------------------------------------------------
-
 cli(process.argv, {
   clean,
+  build,
   pack,
-  install_cli,
-  watch
+  install_cli
 }).catch(console.log)
+

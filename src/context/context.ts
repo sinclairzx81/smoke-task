@@ -25,11 +25,9 @@ SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { Script, createContext } from 'vm'
+import { join }                  from 'path' 
 import { TaskFile }              from '../taskfile'
-import { shell_options, shell }  from './shell'
-import { exists }                from './exists'
-import { make }                  from './make'
-import { drop }                  from './drop'
+import * as effects              from './effects'
 
 // -------------------------------------------------------------------
 //
@@ -40,13 +38,13 @@ import { drop }                  from './drop'
 //
 // -------------------------------------------------------------------
 
-function mapParameterType (parameters: string[]): Array<string|number|boolean> {
+function mapParameterType(parameters: string[]): Array<string | number | boolean> {
   return parameters.map(parameter => {
-    if(parameter === 'true') {
+    if (parameter === 'true') {
       return true
-    } else if(parameter === 'false') {
+    } else if (parameter === 'false') {
       return false
-    } else if(!isNaN(parameter as any)) {
+    } else if (!isNaN(parameter as any)) {
       return parseFloat(parameter)
     } else {
       return parameter
@@ -67,20 +65,18 @@ function mapParameterType (parameters: string[]): Array<string|number|boolean> {
 export async function runTask(taskFile: TaskFile, task: string, parameters: string[] = []) {
   const args = mapParameterType(parameters)
   const context = createContext({
+    require: (module: string) => require(join(process.cwd(), module)),
+    __dirname:  process.cwd(),
+    __filename: join(process.cwd(), 'tasks.js'),
     process,
-    require,
     console,
     args,
-    shell_options,
-    shell,
-    exists,
-    make,
-    drop,
-    ...global
+    ...global,
+    ...effects
   })
   const theader = `(async function(args) {`
   const tcontent = taskFile.content
-  const tboot   = `return await ${task}(...args)`
+  const tboot = `return await ${task}(...args)`
   const tfooter = `})(args);`
   const tcode = [
     theader,
@@ -89,5 +85,11 @@ export async function runTask(taskFile: TaskFile, task: string, parameters: stri
     tfooter
   ].join('\n\n')
   const script = new Script(tcode)
-  await script.runInContext(context)
+  try {
+    await script.runInContext(context)
+    process.exit(0)
+  } catch (error) {
+    console.log(error.message)
+    process.exit(1)
+  }
 }
