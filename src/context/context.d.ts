@@ -26,19 +26,19 @@ SOFTWARE.
 
 /// <reference types="node" />
 
-declare class File {
+declare class TFile {
     /** Appends to this file from a remote path | url. If file not exist, create. */
-    append_from(path_or_url: string): File;
+    append_from(path_or_url: string): TFile;
     /** Appends to this file. If file not exist, create. */
-    append(content: Buffer | string | Readable): File;
+    append(content: Buffer | string | Readable): TFile;
     /** Copies this file into the given folder. */
-    copy_to(folder: string): File;
+    copy_to(folder: string): TFile;
     /** Creates this file if not exists. */
-    create(): File;
+    create(): TFile;
     /** Deletes this file if exists. */
-    delete(): File;
+    delete(): TFile;
     /** Makes a find and replace edit to this file. */
-    edit(find: RegExp | string, replace: string): File;
+    edit(find: RegExp | string, replace: string): TFile;
     /** Executes effects on this file. */
     exec(): Promise<void>;
     /** Returns true if this file exists. */
@@ -46,27 +46,27 @@ declare class File {
     /** Returns a hash for this file with the given algorithm (default is sha1) */
     hash(algorithm?: string): Promise<string>;
     /** Moves this file into the given folder. */
-    move_to(folder: string): File;
+    move_to(folder: string): TFile;
     /** Prepends to this file with content loaded from a remote path or url. If the file does not exist, it is created. */
-    prepend_from(path_or_url: string): File;
+    prepend_from(path_or_url: string): TFile;
     /** Prepends to this file. If the file does not exist, it is created. */
-    prepend(content: Buffer | string | Readable): File;
+    prepend(content: Buffer | string | Readable): TFile;
     /** Returns the contents of this file as a buffer. */
     read(): Promise<Buffer>;
     /** Returns the contents of this file a string. */
     read(encoding: string): Promise<Buffer>;
     /** Renames this file to the given newname. */
-    rename(newname: string): File;
+    rename(newname: string): TFile;
     /** Returns the size of this file in bytes. */
     size(): Promise<number>;
     /** Returns a fs stats object for this file. */
     stat(): Promise<Stats>;
     /** Truncates the contents of this file. If the file does not exist, it is created. */
-    truncate(): File;
+    truncate(): TFile;
     /** Writes to this file with content loaded from a remote path or url. If the file does not exist, it is created. */
-    write_from(path_or_url: string): File;
+    write_from(path_or_url: string): TFile;
     /** Writes to this file. If the file does not exist, it is created. */
-    write(content: Buffer | string | Readable): File;
+    write(content: Buffer | string | Readable): TFile;
 }
 declare class Folder {
     constructor(current: string, effects: Effect[]);
@@ -121,7 +121,7 @@ declare class Watch {
 }
 
 /** Creates a new file combinator. */
-declare function file(path: string): File
+declare function file(path: string): TFile
 
 /** Creates a new folder combinator. */
 declare function folder(path: string): Folder
