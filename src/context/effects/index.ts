@@ -46,9 +46,6 @@ export function watch(path: string): Watch {
 
 /** Creates a shell effect combinator. */
 export function shell(command: string): Shell {
-    return new Shell(command, 
-        data => process.stdout.write(data), 
-        data => process.stderr.write(data),
-        0)
+    return new Shell(command, undefined, undefined, 0)
 }
 

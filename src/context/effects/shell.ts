@@ -24,13 +24,14 @@ SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { OutFunction, ErrFunction, shell_execute } from './effects/shell_execute' 
+import { OutFunction, ErrFunction, shell_execute, shell_execute_inherit } from './effects/shell_execute' 
 
 export class Shell {
-    constructor(private _command: string, 
-                private _out: OutFunction, 
-                private _err: ErrFunction, 
-                private _expect: number) {}
+    constructor(private readonly _command: string, 
+                private readonly _out: OutFunction | undefined, 
+                private readonly _err: ErrFunction | undefined, 
+                private readonly _expect: number) {}
+
     /** Redirects stdout to the given function. */
     public out(func: OutFunction): Shell {
         return new Shell(this._command, func, this._err, this._expect)
@@ -49,6 +50,11 @@ export class Shell {
     }
     /** Executes this process. */
     public exec(): Promise<void> {
-        return shell_execute(this._command, this._out, this._err, this._expect)
+        if(this._out === undefined && this._err === undefined) {
+            return shell_execute_inherit(this._command, this._expect)
+        }
+        const out = this._out || (() => {});
+        const err = this._err || (() => {});
+        return shell_execute(this._command, out, err, this._expect)
     }
 }

@@ -68,3 +68,23 @@ export function shell_execute(command: string, out: OutFunction, err: ErrFunctio
         })
     }) 
 }
+/** Executes the given shell command with the given options. */
+export function shell_execute_inherit(command: string, exitcode: number): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+        const options = start_options(command)
+        const sub = spawn(options.command, options.options, { stdio: 'inherit' })
+        sub.on('error', error => reject(error))
+        sub.on('close', code => {
+            if(code !== exitcode) {
+                const error = new Error(`Shell command '${command}' ended with unexpected exit code. Expected ${exitcode}, got ${code}`)
+                reject(error)
+            } else {
+                resolve()
+            }
+        })
+        // terminate sub process on process exit.
+        process.on('exit', () => {
+            try { sub.kill() } catch { }
+        })
+    }) 
+}
