@@ -65,14 +65,17 @@ function mapParameterType(parameters: string[]): Array<string | number | boolean
 export async function runTask(taskFile: TaskFile, task: string, parameters: string[] = []) {
   const args = mapParameterType(parameters)
   const context = createContext({
-    require: (module: string) => require(join(process.cwd(), module)),
+    require: (module: string) => {
+      try { return require(module) } catch { /** ignore */}
+      return require(join(process.cwd(), module))
+    },
     __dirname:  process.cwd(),
     __filename: join(process.cwd(), 'tasks.js'),
+    ...global,
+    ...effects,
     process,
     console,
     args,
-    ...global,
-    ...effects
   })
   const theader = `(async function(args) {`
   const tcontent = taskFile.content
