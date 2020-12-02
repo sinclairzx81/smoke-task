@@ -50,7 +50,7 @@ async function report(message: string | null = null, error: boolean = false) {
   
   // report general help information.
   buffer.push(...[
-    'Version 1.1.0', ``,
+    'Version 1.1.3', ``,
     `$ ${green}smoke-task${esc} <task> [...params]`, ``,
   ])
 
